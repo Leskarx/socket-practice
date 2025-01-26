@@ -1,35 +1,55 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState,useCallback,useMemo, useRef } from 'react'
 import './App.css'
 import { io } from 'socket.io-client'
+import VideoStream from './components/VideoStream'
 
 function App() {
-  const socket = io('http://localhost:3000')
-  const [count, setCount] = useState(0)
+  const foucuss=useRef(null)
+  const socket=useMemo(()=>{
+    console.log("render.......>")
+    return io('http://localhost:3000',
+      {autoConnect: false}
+    )
+  },[])
+
+  function focusInput() {
+  foucuss.current.focus()
+  }
+
+  // const socket = io('http://localhost:3000',
+  //   {autoConnect: false}
+  // )
+  // console.log("render.......>")
+  const connectServer=useCallback(()=>{
+    socket.connect()
+    socket.emit('hello',"hello from client")
+    socket.on("reply",(data)=>{
+      console.log(data)
+    })
+  },[socket])
+  
+  const [rerender,setRerender] = useState(false)
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+    <VideoStream />
+    {/* <p className=' text-red-400' >Hello</p>
+    <input type="text" className=' bg-white text-black px-2' ref={foucuss} />
+    <button onClick={focusInput}>Focus on text</button>
+
+    <button onClick={connectServer} style={{
+      display: 'block',
+      margin: 'auto',
+      marginTop: '50px',
+      padding: '10px 20px',
+      fontSize: '20px',
+      cursor: 'pointer'
+    }}>
+      connect to server
+    </button>
+    <button onClick={()=>{
+      setRerender(!rerender)
+    }}>rerender</button> */}
     </>
   )
 }

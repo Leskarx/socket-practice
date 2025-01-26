@@ -15,6 +15,10 @@ const io = new Server(server,{
 });
 io.on("connection", (socket) => {
     console.log(`user connected ${socket.id}`);
+    // socket.on("hello",(data)=>{
+    //     console.log(data);
+    // })
+    socket.broadcast.emit("reply",`Hello from server ${socket.id}`);
 })
 
 app.get('/', (req, res) => {
